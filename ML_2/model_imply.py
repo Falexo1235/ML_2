@@ -13,6 +13,7 @@ import pickle
 import argparse
 from tqdm import tqdm
 import sys 
+import wandb
 
 class TextNormalizationLogger:
 
@@ -434,6 +435,13 @@ class SaarusTextNormalizer:
             prediction = self.predict(prompt)
             answer = self.construct_answer(prompt, prediction)
             return answer.strip()
+        
+            if hasattr(self, "use_wandb") and self.use_wandb:
+                processing_time = time.time() - start_time
+                wandb.log({
+                    "neural_processing_time": processing_time,
+                    "text_length": len(text)
+                })
 
         except Exception as e:
             self.logger.error(f"Error in neural normalization for '{text}': {e}")
@@ -445,17 +453,41 @@ class My_TextNormalization_Model:
         self.rule_based = RuleBasedNormalizer()
         self.neural = SaarusTextNormalizer()
         self.neural_loaded = False
+        self.use_wandb=True
+        
+        wandb.init(
+            project="text-normalization",
+            config={
+                "model":"Rule-based + Saarus T5",
+                "framework":"PyTorch",
+                "rule_based_dict_size":0
+            }
+        )
 
         self.logger.info("Text Normalization Model initialized")
 
     def save_models(self, save_dir: str):
         try:
-
             Path(save_dir).mkdir(parents=True, exist_ok=True)
 
             with open(os.path.join(save_dir, 'rule_based_dict.pkl'), 'wb') as f:
                 pickle.dump(self.rule_based.res_dict, f)
 
+            wandb.log({"rule_based_dict_size": len(self.rule_based.res_dict)})
+            model_artifact = wandb.Artifact(
+                    name="text_normalization_model",
+                    type="model",
+                    description="Rule-based dictionary and neural model weights"
+                )
+            model_artifact.add_dir(save_dir)
+            wandb.log_artifact(model_artifact)
+            examples=list(self.rule_based.res_dict.items())[:10]
+            table = wandb.Table(columns=["Original","Normalized","Count"])
+            for original, normalizations in examples:
+                normalized, count = max(normalizations.items(), key=lambda x: x[1])
+                table.add_data(original,normalized,count)
+            wandb.log({"rule_based_examples": table})
+            
             self.neural.save_pytorch_model(save_dir)
 
             self.neural.tokenizer.save_pretrained(save_dir)
@@ -466,6 +498,7 @@ class My_TextNormalization_Model:
         except Exception as e:
             self.logger.error(f"Error saving models: {e}")
             return False
+        
     def load_saved_models(self, model_dir: str) -> bool:
         try:
 
@@ -555,6 +588,24 @@ class My_TextNormalization_Model:
 
     def process_file(self, input_path: str, output_path: str) -> bool:
         try:
+            wandb.config.update({
+                "input_file": input_path,
+                "output_file": output_path,
+                "total_rows": total_rows
+            })
+            sample_results = []
+            for i in range(min(100, len(results))):
+                sample_results.append([
+                    results[i]['id'],
+                    results[i].get('before', ''),
+                    results[i]['after']
+                ])
+            results_table = wandb.Table(
+                columns=["ID", "Original", "Normalized"],
+                data=sample_results
+            )
+            wandb.log({"sample_results": results_table})
+
             self.logger.info(f"Processing file: {input_path}")
             df = pd.read_csv(input_path)
             total_rows = len(df)
@@ -653,6 +704,8 @@ class My_TextNormalization_Model:
             )
 
         return False
+    def __del__(self):
+        wandb.finish()
 
 def main():
     parser = argparse.ArgumentParser(description='Text Normalization System')
@@ -665,7 +718,10 @@ def main():
     model = My_TextNormalization_Model()
 
     if args.train:
-
+        wandb.config.update({
+            "training_data": "./data/ru_train.csv",
+            "additional_data": "./data/ru_with_types"
+        })
         model.load_model(
             train_path="./data/ru_train.csv",
             data_path="./data/ru_with_types"

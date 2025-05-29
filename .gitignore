@@ -161,3 +161,4 @@ cython_debug/
 /notebooks/custom_t5_model
 /ML_2/data
 /ML_2/model_repository
+/ML_2/wandb
