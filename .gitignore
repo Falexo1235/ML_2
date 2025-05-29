@@ -10,7 +10,6 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
 downloads/
 eggs/
 .eggs/
@@ -56,7 +55,6 @@ cover/
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -161,3 +159,5 @@ cython_debug/
 /data/ru_with_types
 /notebooks/neural_model
 /notebooks/custom_t5_model
+/ML_2/data
+/ML_2/model_repository
