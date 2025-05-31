@@ -434,7 +434,6 @@ class SaarusTextNormalizer:
             prompt = self.construct_prompt(text)
             prediction = self.predict(prompt)
             answer = self.construct_answer(prompt, prediction)
-            return answer.strip()
         
             if hasattr(self, "use_wandb") and self.use_wandb:
                 processing_time = time.time() - start_time
@@ -442,6 +441,7 @@ class SaarusTextNormalizer:
                     "neural_processing_time": processing_time,
                     "text_length": len(text)
                 })
+            return answer.strip()
 
         except Exception as e:
             self.logger.error(f"Error in neural normalization for '{text}': {e}")
