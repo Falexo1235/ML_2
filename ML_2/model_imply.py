@@ -14,6 +14,7 @@ import argparse
 from tqdm import tqdm
 import sys 
 import wandb
+import time
 
 class TextNormalizationLogger:
 
@@ -293,7 +294,7 @@ class SaarusTextNormalizer:
         self.tokenizer = None
         self.model = None
         self.device = torch.device('cpu')
-        self.re_tokens = re.compile(r"(?:[.,!?]|[а-яА-Я]\S*|\d\S*(?:\.\d+)?|[^а-яА-Я\d\s]+)\s*")
+        self.re_tokens = re.compile(r"(?:[.,!?]|[а-яА-Я]\S*|\d\S*(?:.\d+)?|[^а-яА-Я\d\s]+)\s*")
         self.roman_numerals = {
             'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
             'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX',
@@ -432,6 +433,7 @@ class SaarusTextNormalizer:
 
         try:
             prompt = self.construct_prompt(text)
+            start_time = time.time()
             prediction = self.predict(prompt)
             answer = self.construct_answer(prompt, prediction)
         
@@ -588,24 +590,6 @@ class My_TextNormalization_Model:
 
     def process_file(self, input_path: str, output_path: str) -> bool:
         try:
-            wandb.config.update({
-                "input_file": input_path,
-                "output_file": output_path,
-                "total_rows": total_rows
-            })
-            sample_results = []
-            for i in range(min(100, len(results))):
-                sample_results.append([
-                    results[i]['id'],
-                    results[i].get('before', ''),
-                    results[i]['after']
-                ])
-            results_table = wandb.Table(
-                columns=["ID", "Original", "Normalized"],
-                data=sample_results
-            )
-            wandb.log({"sample_results": results_table})
-
             self.logger.info(f"Processing file: {input_path}")
             df = pd.read_csv(input_path)
             total_rows = len(df)
@@ -645,8 +629,8 @@ class My_TextNormalization_Model:
                 except Exception as e:
                     self.logger.error(f"Error processing row {i}: {e}")
                     results.append({
-                        'id': f"{row.sentence_id}_{row.token_id}",
-                        'after': str(row.before)
+                        'id': f"{getattr(row, 'sentence_id', 'unknown')}_{getattr(row, 'token_id', 'unknown')}",
+                        'after': str(getattr(row, 'before', ''))
                     })
                     main_progress.update(1)
 
@@ -673,6 +657,29 @@ class My_TextNormalization_Model:
 
                 neural_progress.close()
 
+            # Log to wandb after processing is complete
+            wandb.config.update({
+                "input_file": input_path,
+                "output_file": output_path,
+                "total_rows": total_rows
+            })
+            
+            # Log sample results
+            sample_results = []
+            for i in range(min(100, len(results))):
+                # Get original text from the dataframe for logging
+                original_for_logging = str(df.iloc[i]['before']) if i < len(df) else ''
+                sample_results.append([
+                    results[i]['id'],
+                    original_for_logging,
+                    results[i]['after']
+                ])
+            results_table = wandb.Table(
+                columns=["ID", "Original", "Normalized"],
+                data=sample_results
+            )
+            wandb.log({"sample_results": results_table})
+
             results_df = pd.DataFrame(results)
             results_df.to_csv(output_path, index=False)
             self.logger.info(f"Results saved to {output_path}")
@@ -697,9 +704,9 @@ class My_TextNormalization_Model:
             return False
 
         if original_text == rule_result:
-
+            # Check if text contains digits or specific English number words
             return bool(
-                (re.search(r'\d', original_text) and re.search(r'(?![a-zA-Zа-яА-Я])')) or 
+                re.search(r'\d', original_text) or 
                 re.search(r'thousand|hundred|fifty|million|billion', original_text, re.IGNORECASE)
             )
 
