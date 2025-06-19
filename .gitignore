@@ -159,3 +159,8 @@ cython_debug/
 /ML_2/model_repository
 /ML_2/wandb
 /ML_2/data/ru_with_types
+/wandb
+ML_2/data/ru_sample_submission_2.csv
+ML_2/data/ru_test_2.csv
+ML_2/data/ru_train.csv
+ML_2/data/final_submission.csv

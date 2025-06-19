@@ -1,0 +1,23 @@
+services:
+  text_normalization:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./ML_2/data:/app/ML_2/data
+      - ./ML_2/model_repository:/app/ML_2/model_repository
+    environment:
+      - WANDB_API_KEY=${WANDB_API_KEY}
+  triton:
+    build:
+      context: .
+      dockerfile: triton.Dockerfile
+    ports:
+      - "8000:8000"  # HTTP API
+      - "8001:8001"  # gRPC API
+      - "8002:8002"  # Metrics
+    volumes:
+      - ./ML_2/model_repository:/models:ro
+    environment:
+      - TRITON_CPU_THREAD_COUNT=4
+    command: tritonserver --model-repository=/models --log-verbose=1

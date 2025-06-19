@@ -55,18 +55,20 @@ class TextNormalizationLogger:
 
     def get_logger(self):
         return self._logger
-
+#rule-baseline
 class RuleBasedNormalizer:
 
     def __init__(self):
         self.logger = TextNormalizationLogger().get_logger()
         self.res_dict = {}
         self.sdict = self._init_substitution_dict()
+        #numbers dictionary
         self.SUB = str.maketrans("₀₁₂₃₄₅₆₇₈₉", "0123456789")
         self.SUP = str.maketrans("⁰¹²³⁴⁵⁶⁷⁸⁹", "0123456789")
         self.OTH = str.maketrans("፬", "4")
 
     def _init_substitution_dict(self) -> Dict[str, str]:
+        #special cases dictionary
         sdict = {
             'km2': 'квадратных километров',
             'km²': 'квадратных километров',
@@ -106,6 +108,7 @@ class RuleBasedNormalizer:
         }
         return sdict
 
+    #dictionary training
     def load_training_data(self, train_path: str, data_path: Optional[str] = None) -> bool:
         try:
             self.logger.info(f"Loading training data from {train_path}")
@@ -150,7 +153,7 @@ class RuleBasedNormalizer:
         except Exception as e:
             self.logger.error(f"Error loading training data: {e}")
             return False
-
+    #training with additional data from the competition
     def _load_additional_data(self, data_path: str):
         try:
             files = os.listdir(data_path)
@@ -244,7 +247,7 @@ class RuleBasedNormalizer:
         except Exception as e:
             self.logger.error(f"Error in rule-based normalization for '{text}': {e}")
             return text
-
+    #dates fix from competition comments
     def apply_date_fixes(self, text: str) -> str:
         replacements = {
             'two thousand and sixteen': 'две тысячи шестнадцатого',
@@ -286,7 +289,7 @@ class RuleBasedNormalizer:
         for eng, rus in replacements.items():
             result = result.replace(eng, rus)
         return result
-
+#neural text normalization
 class SaarusTextNormalizer:
 
     def __init__(self):
@@ -295,20 +298,21 @@ class SaarusTextNormalizer:
         self.model = None
         self.device = torch.device('cpu')
         self.re_tokens = re.compile(r"(?:[.,!?]|[а-яА-Я]\S*|\d\S*(?:.\d+)?|[^а-яА-Я\d\s]+)\s*")
+        #roman numbers dictionary for special cases
         self.roman_numerals = {
             'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X',
             'XI', 'XII', 'XIII', 'XIV', 'XV', 'XVI', 'XVII', 'XVIII', 'XIX', 'XX',
             'XXI', 'XXII', 'XXIII', 'XXIV', 'XXV', 'XXVI', 'XXVII', 'XXVIII', 'XXIX', 'XXX',
             'XL', 'L', 'LX', 'LXX', 'LXXX', 'XC', 'C', 'CC', 'CCC', 'CD', 'D', 'DC', 'DCC', 'DCCC', 'CM', 'M'
         }
-
+    #exporting the model
     def save_pytorch_model(self, save_dir: str):
         torch.save(self.model.state_dict(), os.path.join(save_dir, "model.pt"))
 
         if hasattr(self.model, 'config'):
             with open(os.path.join(save_dir, "config.json"), "w") as f:
                 f.write(self.model.config.to_json_string())
-
+    #importing the model
     def load_pytorch_model(self, model_dir: str) -> bool:
         try:
 
@@ -316,6 +320,7 @@ class SaarusTextNormalizer:
             if os.path.exists(config_path):
                 config = T5Config.from_json_file(config_path)
                 self.model = T5ForConditionalGeneration(config)
+            #if there is no model, download it
             else:
                 self.model = T5ForConditionalGeneration.from_pretrained(
                     "saarus72/russian_text_normalizer"
@@ -455,8 +460,11 @@ class My_TextNormalization_Model:
         self.rule_based = RuleBasedNormalizer()
         self.neural = SaarusTextNormalizer()
         self.neural_loaded = False
-        self.use_wandb=True
         
+        # Initialize wandb only if API key is available
+        api_key = os.getenv('WANDB_API_KEY')
+        #if api_key:
+        wandb.login(key=api_key)
         wandb.init(
             project="text-normalization",
             config={
@@ -465,6 +473,10 @@ class My_TextNormalization_Model:
                 "rule_based_dict_size":0
             }
         )
+        self.use_wandb = True
+        #else:
+            #self.use_wandb = False
+            #self.logger.warning("WANDB_API_KEY not found, wandb logging disabled")
 
         self.logger.info("Text Normalization Model initialized")
 
@@ -550,7 +562,7 @@ class My_TextNormalization_Model:
             if self._needs_neural_processing(text, rule_result):
                 if self.neural_loaded:
                     try:
-                        neural_result = self.neural.normalize_text(text)
+                        #neural_result = self.neural.normalize_text(text)
                         final_result = self._postprocess_neural_result(text, neural_result)
                         self.logger.debug(f"Neural normalization: '{text}' -> '{final_result}'")
                         return final_result
