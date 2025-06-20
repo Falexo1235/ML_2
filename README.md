@@ -68,22 +68,22 @@ python ML_2/model_imply.py --normalize --input=ML_2/data/ru_test_2.csv --output=
 
 **Build the Docker image:**
 ```bash
-docker build -t text-normalization .
+docker-compose build text-normalization
 ```
 
 **Train the model in Docker:**
 ```bash
-docker run text-normalization --train
+docker-compose run text_normalization --train
 ```
 
 **Normalize with default data in Docker:**
 ```bash
-docker run text-normalization --normalize
+docker-compose run text_normalization --normalize
 ```
 
 **Normalize with custom data in Docker:**
 ```bash
-docker run -v /path/to/data:/app/ML_2/data text-normalization --normalize --input=/app/ML_2/data/ru_test_2.csv --output=/app/ML_2/data/final_submission.csv
+docker-compose run -v /path/to/data:/app/ML_2/data text_normalization --normalize --input=/app/ML_2/data/ru_test_2.csv --output=/app/ML_2/data/final_submission.csv
 ```
 
 ### 4. Triton Inference Server
