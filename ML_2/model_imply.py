@@ -16,6 +16,10 @@ import sys
 import wandb
 import time
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, 'data')
+MODEL_REPO_PATH = os.path.join(BASE_DIR, "model_repository", "text_normalization", "1")
+
 class TextNormalizationLogger:
 
     _instance = None
@@ -307,27 +311,17 @@ class SaarusTextNormalizer:
         }
     #exporting the model
     def save_pytorch_model(self, save_dir: str):
-        torch.save(self.model.state_dict(), os.path.join(save_dir, "model.pt"))
-
+        # Save the full model (not just state_dict) in the format expected by from_pretrained
+        self.model.save_pretrained(save_dir)
+        
         if hasattr(self.model, 'config'):
             with open(os.path.join(save_dir, "config.json"), "w") as f:
                 f.write(self.model.config.to_json_string())
     #importing the model
     def load_pytorch_model(self, model_dir: str) -> bool:
         try:
-
-            config_path = os.path.join(model_dir, "config.json")
-            if os.path.exists(config_path):
-                config = T5Config.from_json_file(config_path)
-                self.model = T5ForConditionalGeneration(config)
-            #if there is no model, download it
-            else:
-                self.model = T5ForConditionalGeneration.from_pretrained(
-                    "saarus72/russian_text_normalizer"
-                )
-
-            model_path = os.path.join(model_dir, "model.pt")
-            self.model.load_state_dict(torch.load(model_path, map_location=self.device))
+            # Load the model directly using from_pretrained
+            self.model = T5ForConditionalGeneration.from_pretrained(model_dir)
             self.model.to(self.device)
             self.model.eval()
 
@@ -461,9 +455,7 @@ class My_TextNormalization_Model:
         self.neural = SaarusTextNormalizer()
         self.neural_loaded = False
         
-        # Initialize wandb only if API key is available
         api_key = os.getenv('WANDB_API_KEY')
-        #if api_key:
         wandb.login(key=api_key)
         wandb.init(
             project="text-normalization",
@@ -474,9 +466,6 @@ class My_TextNormalization_Model:
             }
         )
         self.use_wandb = True
-        #else:
-            #self.use_wandb = False
-            #self.logger.warning("WANDB_API_KEY not found, wandb logging disabled")
 
         self.logger.info("Text Normalization Model initialized")
 
@@ -730,26 +719,26 @@ def main():
     parser = argparse.ArgumentParser(description='Text Normalization System')
     parser.add_argument('--train', action='store_true', help='Train and save models')
     parser.add_argument('--normalize', action='store_true', help='Run text normalization')
-    parser.add_argument('--input', type=str, help='Input file path for normalization', default='./data/ru_test_2.csv')
-    parser.add_argument('--output', type=str, help='Output file path for results', default='./data/final_submission.csv')
+    parser.add_argument('--input', type=str, help='Input file path for normalization', default=os.path.join(DATA_PATH, 'ru_test_2.csv'))
+    parser.add_argument('--output', type=str, help='Output file path for results', default=os.path.join(DATA_PATH, 'final_submission.csv'))
     args = parser.parse_args()
 
     model = My_TextNormalization_Model()
 
     if args.train:
         wandb.config.update({
-            "training_data": "./data/ru_train.csv",
-            "additional_data": "./data/ru_with_types"
+            "training_data": os.path.join(DATA_PATH, 'ru_train.csv'),
+            "additional_data": os.path.join(DATA_PATH, 'ru_with_types')
         })
         model.load_model(
-            train_path="./data/ru_train.csv",
-            data_path="./data/ru_with_types"
+            train_path=os.path.join(DATA_PATH, 'ru_train.csv'),
+            data_path=os.path.join(DATA_PATH, 'ru_with_types')
         )
-        model.save_models("./model_repository/text_normalization/1/")
+        model.save_models(MODEL_REPO_PATH)
 
     elif args.normalize and args.input and args.output:
 
-        model.load_saved_models("./model_repository/text_normalization/1/")
+        model.load_saved_models(MODEL_REPO_PATH)
         model.process_file(args.input, args.output)
 
 if __name__ == "__main__":

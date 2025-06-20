@@ -9705,3 +9705,62 @@
 2025-06-19 06:14:35,305 - TextNormalization - INFO - Text Normalization Model initialized
 2025-06-19 06:14:35,306 - TextNormalization - INFO - Loading text normalization models...
 2025-06-19 06:14:35,306 - TextNormalization - INFO - Loading saarus72/russian_text_normalizer model...
+2025-06-19 16:17:46,157 - TextNormalization - INFO - Text Normalization Model initialized
+2025-06-19 16:17:46,157 - TextNormalization - INFO - Loading text normalization models...
+2025-06-19 16:17:46,158 - TextNormalization - INFO - Loading training data from D:\HitsRepos\ML_2\ML_2\data\ru_train.csv
+2025-06-19 16:17:55,647 - TextNormalization - INFO - Main training file: Total: 10574516, Different values: 1322698
+2025-06-19 16:17:55,648 - TextNormalization - INFO - Training data loaded successfully. Dictionary size: 801234
+2025-06-19 16:17:55,649 - TextNormalization - INFO - Loading saarus72/russian_text_normalizer model...
+2025-06-19 16:17:57,078 - TextNormalization - INFO - Model loaded successfully on cpu
+2025-06-19 16:17:57,079 - TextNormalization - INFO - Model loading completed
+2025-06-19 16:19:58,397 - TextNormalization - INFO - Exported ONNX model to D:\HitsRepos\ML_2\ML_2\data\model_repository\text_normalization\1
+2025-06-19 16:19:59,355 - TextNormalization - INFO - Models saved successfully to D:\HitsRepos\ML_2\ML_2\data\model_repository\text_normalization\1
+2025-06-19 16:28:35,612 - TextNormalization - INFO - Text Normalization Model initialized
+2025-06-19 16:28:35,612 - TextNormalization - INFO - Loading text normalization models...
+2025-06-19 16:28:35,613 - TextNormalization - INFO - Loading training data from D:\HitsRepos\ML_2\ML_2\data\ru_train.csv
+2025-06-19 16:28:46,080 - TextNormalization - INFO - Main training file: Total: 10574516, Different values: 1322698
+2025-06-19 16:28:46,080 - TextNormalization - INFO - Training data loaded successfully. Dictionary size: 801234
+2025-06-19 16:28:46,080 - TextNormalization - INFO - Loading saarus72/russian_text_normalizer model...
+2025-06-19 16:28:47,735 - TextNormalization - INFO - Model loaded successfully on cpu
+2025-06-19 16:28:47,736 - TextNormalization - INFO - Model loading completed
+2025-06-19 16:28:51,558 - TextNormalization - ERROR - Error exporting model to ONNX: export() got an unexpected keyword argument 'inputs'
+2025-06-19 16:28:51,638 - TextNormalization - INFO - Models saved successfully to D:\HitsRepos\ML_2\ML_2\data\model_repository\text_normalization\1
+2025-06-19 16:34:51,349 - TextNormalization - INFO - Text Normalization Model initialized
+2025-06-19 16:34:51,349 - TextNormalization - INFO - Loading text normalization models...
+2025-06-19 16:34:51,350 - TextNormalization - INFO - Loading training data from D:\HitsRepos\ML_2\ML_2\data\ru_train.csv
+2025-06-19 16:35:01,342 - TextNormalization - INFO - Main training file: Total: 10574516, Different values: 1322698
+2025-06-19 16:35:01,342 - TextNormalization - INFO - Training data loaded successfully. Dictionary size: 801234
+2025-06-19 16:35:01,343 - TextNormalization - INFO - Loading saarus72/russian_text_normalizer model...
+2025-06-19 16:35:02,703 - TextNormalization - INFO - Model loaded successfully on cpu
+2025-06-19 16:35:02,704 - TextNormalization - INFO - Model loading completed
+2025-06-19 16:35:06,475 - TextNormalization - ERROR - Error exporting model to ONNX: export() got an unexpected keyword argument 'inputs'
+2025-06-19 16:35:06,552 - TextNormalization - INFO - Models saved successfully to D:\HitsRepos\ML_2\ML_2\data\model_repository\text_normalization\1
+2025-06-19 16:40:04,507 - TextNormalization - INFO - Text Normalization Model initialized
+2025-06-19 16:40:04,508 - TextNormalization - INFO - Loading text normalization models...
+2025-06-19 16:40:04,508 - TextNormalization - INFO - Loading training data from D:\HitsRepos\ML_2\ML_2\data\ru_train.csv
+2025-06-19 16:40:14,808 - TextNormalization - INFO - Main training file: Total: 10574516, Different values: 1322698
+2025-06-19 16:40:14,809 - TextNormalization - INFO - Training data loaded successfully. Dictionary size: 801234
+2025-06-19 16:40:14,810 - TextNormalization - INFO - Loading saarus72/russian_text_normalizer model...
+2025-06-19 16:40:16,172 - TextNormalization - INFO - Model loaded successfully on cpu
+2025-06-19 16:40:16,173 - TextNormalization - INFO - Model loading completed
+2025-06-19 16:42:11,039 - TextNormalization - INFO - Exported ONNX model (encoder/decoder/decoder_with_past) to D:\HitsRepos\ML_2\ML_2\data\model_repository\text_normalization\1
+2025-06-19 16:42:11,251 - TextNormalization - INFO - Models saved successfully to D:\HitsRepos\ML_2\ML_2\data\model_repository\text_normalization\1
+2025-06-19 16:45:01,107 - TextNormalization - INFO - Text Normalization Model initialized
+2025-06-19 16:45:01,108 - TextNormalization - INFO - Loading text normalization models...
+2025-06-19 16:45:01,108 - TextNormalization - INFO - Loading training data from D:\HitsRepos\ML_2\ML_2\data\ru_train.csv
+2025-06-19 16:45:10,532 - TextNormalization - INFO - Main training file: Total: 10574516, Different values: 1322698
+2025-06-19 16:45:10,533 - TextNormalization - INFO - Training data loaded successfully. Dictionary size: 801234
+2025-06-19 16:45:10,534 - TextNormalization - INFO - Loading saarus72/russian_text_normalizer model...
+2025-06-19 16:45:12,134 - TextNormalization - INFO - Model loaded successfully on cpu
+2025-06-19 16:45:12,136 - TextNormalization - INFO - Model loading completed
+2025-06-19 16:47:02,524 - TextNormalization - INFO - Exported ONNX model (encoder/decoder/decoder_with_past) to D:\HitsRepos\ML_2\ML_2\model_repository\text_normalization\1
+2025-06-19 16:47:02,639 - TextNormalization - INFO - Models saved successfully to D:\HitsRepos\ML_2\ML_2\model_repository\text_normalization\1
+2025-06-19 17:31:12,004 - TextNormalization - INFO - Text Normalization Model initialized
+2025-06-19 17:31:12,005 - TextNormalization - INFO - Loading text normalization models...
+2025-06-19 17:31:12,006 - TextNormalization - INFO - Loading training data from ./data/ru_train.csv
+2025-06-19 17:31:23,293 - TextNormalization - INFO - Main training file: Total: 10574516, Different values: 1322698
+2025-06-19 17:31:23,294 - TextNormalization - INFO - Training data loaded successfully. Dictionary size: 801234
+2025-06-19 17:31:23,294 - TextNormalization - INFO - Loading saarus72/russian_text_normalizer model...
+2025-06-19 17:31:24,778 - TextNormalization - INFO - Model loaded successfully on cpu
+2025-06-19 17:31:24,779 - TextNormalization - INFO - Model loading completed
+2025-06-19 17:31:45,023 - TextNormalization - INFO - Models saved successfully to ./model_repository/text_normalization/1/
