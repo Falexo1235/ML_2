@@ -33,7 +33,7 @@ class TextNormalizationLogger:
 
     @classmethod
     def _setup_logger(cls):
-        log_dir = Path("./data")
+        log_dir = Path(DATA_PATH)
         log_dir.mkdir(exist_ok=True)
 
         cls._logger = logging.getLogger('TextNormalization')
@@ -42,7 +42,7 @@ class TextNormalizationLogger:
         for handler in cls._logger.handlers[:]:
             cls._logger.removeHandler(handler)
 
-        file_handler = logging.FileHandler('./data/log_file.log', encoding='utf-8')
+        file_handler = logging.FileHandler(os.path.join(DATA_PATH, 'log_file.log'), encoding='utf-8')
         file_handler.setLevel(logging.INFO)
 
         console_handler = logging.StreamHandler()
